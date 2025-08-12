@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Madeira Airport Wind Risk (LPMA)</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; text-align: center; padding: 20px; }
+  h1 { margin-bottom: 5px; }
+  h2 { margin-top: 0; font-weight: normal; }
+  .risk { font-size: 2em; font-weight: bold; padding: 10px; border-radius: 5px; display: inline-block; }
+  .green { background: #4CAF50; color: white; }
+  .orange { background: #FF9800; color: white; }
+  .red { background: #F44336; color: white; }
+  pre { background: #eee; padding: 10px; overflow-x: auto; }
+  #details { margin-top: 10px; font-size: 1.1em; }
+  form { margin-top: 30px; }
+  input[type=email] { width: 80%; padding: 8px; margin-top: 8px; }
+  button { padding: 8px 15px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<h1>Madeira Airport Wind Risk</h1>
+<h2>LPMA – Runways 05 (049°) / 23 (229°)</h2>
+<p>Typical August wind: 11–13 kt (17–23 km/h)</p>
+
+<div id="risk" class="risk">Loading...</div>
+<p id="details"></p>
+
+<h3>Current METAR</h3>
+<pre id="metar">Loading...</pre>
+
+<h3>Current TAF</h3>
+<pre id="taf">Loading...</pre>
+
+<form id="subscribeForm" onsubmit="submitForm(event)">
+  <label for="email">Get alerted when wind risk is RED (LPMA):</label><br>
+  <input id="email" name="email" type="email" required placeholder="you@example.com" />
+  <br>
+  <button type="submit">Subscribe</button>
+  <div id="subMsg" style="margin-top:8px"></div>
+</form>
+
+<script>
+const API_KEY = "9a36222e800046f5bc2442dad1f47868"; // Replace with your CheckWX API key
+const RUNWAYS = [49, 229]; // Corrected runway headings
+const webAppUrl = ""; // Remplace par ton URL Google Apps Script Web App
+
+function deg2rad(deg) { return deg * Math.PI / 180; }
+
+function calcCrosswind(windDir, windSpeed, rwyHeading) {
+  let angle = Math.abs(windDir - rwyHeading);
+  if (angle > 180) angle = 360 - angle;
+  return Math.round(windSpeed * Math.sin(deg2rad(angle)));
+}
+
+function getRisk(cross, gust) {
+  if (cross > 25 || gust > 35) return "red";
+  if (cross > 15 || gust > 25) return "orange";
+  return "green";
+}
+
+async function fetchData() {
+  try {
+    let metarRes = await fetch(`https://api.checkwx.com/metar/LPMA?x-api-key=${API_KEY}`);
+    let tafRes = await fetch(`https://api.checkwx.com/taf/LPMA?x-api-key=${API_KEY}`);
+    let metarData = await metarRes.json();
+    let tafData = await tafRes.json();
+
+    let metar = metarData.data && metarData.data[0] ? metarData.data[0] : "No METAR data";
+    let taf = tafData.data && tafData.data[0] ? tafData.data[0] : "No TAF data";
+    
+    document.getElementById("metar").textContent = metar;
+    document.getElementById("taf").textContent = taf;
+
+    let match = typeof metar === "string" ? metar.match(/(\d{3})(\d{2})G?(\d{2})?KT/) : null;
+    if (match) {
+      let dir = parseInt(match[1]);
+      let spd = parseInt(match[2]);
+      let gust = match[3] ? parseInt(match[3]) : spd;
+
+      let crosswinds = RUNWAYS.map(r => calcCrosswind(dir, spd, r));
+      let maxCross = Math.max(...crosswinds);
+
+      let risk = getRisk(maxCross, gust);
+      document.getElementById("risk").textContent = risk.toUpperCase();
+      document.getElementById("risk").className = `risk ${risk}`;
+      document.getElementById("details").textContent = 
+        `Wind ${dir}° at ${spd} kt (gust ${gust} kt) | Max crosswind: ${maxCross} kt`;
+    } else {
+      document.getElementById("risk").textContent = "No wind data";
+      document.getElementById("risk").className = "risk";
+      document.getElementById("details").textContent = "";
+    }
+  } catch (err) {
+    document.getElementById("risk").textContent = "Error loading data";
+    document.getElementById("risk").className = "risk";
+    document.getElementById("details").textContent = "";
+    console.error(err);
+  }
+}
+
+async function submitForm(e){
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const payload = { email: email };
+  try {
+    const resp = await fetch(webAppUrl, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const j = await resp.json();
+    document.getElementById('subMsg').textContent = j.message || (j.success ? "Subscribed" : "Error");
+  } catch(err) {
+    document.getElementById('subMsg').textContent = "Error sending request.";
+  }
+}
+
+fetchData();
+setInterval(fetchData, 300000); // Refresh every 5 min
+</script>
+</body>
+</html>
