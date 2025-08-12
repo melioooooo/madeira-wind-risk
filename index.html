@@ -78,6 +78,21 @@
     z-index: 2;
     font-family: 'Roboto', Arial, sans-serif;
   }
+  #localTime {
+    font-size: 1.06em;
+    font-weight: 500;
+    color: #00897b;
+    margin: 10px 0 0 0;
+    letter-spacing: 1px;
+    background: #e0f2f1;
+    border-radius: 12px;
+    display: inline-block;
+    padding: 8px 18px;
+    box-shadow: 0 2px 6px #43e97b1a;
+    position: relative;
+    z-index: 2;
+    font-family: 'Roboto', Arial, sans-serif;
+  }
   .risk {
     font-size: 2.9em;
     font-weight: 700;
@@ -254,7 +269,8 @@
 <header>
   <h1>Madeira Airport Wind Risk</h1>
   <h2>LPMA – Runways 05 (049°) / 23 (229°)</h2>
-  <div id="liveTime">Loading time...</div>
+  <div id="liveTime">Loading UTC time...</div>
+  <div id="localTime">Loading Madeira local time...</div>
   <p style="margin-top:18px;margin-bottom:0;color:#555;font-size:1.08em;">
     Typical August wind: 
     <span style="background:#e0f7fa;border-radius:8px;padding:4px 12px;font-weight:500;">
@@ -272,6 +288,11 @@
   <pre id="metar">Loading...</pre>
   <h3><i class="fa-solid fa-cloud-sun"></i> Current TAF</h3>
   <pre id="taf">Loading...</pre>
+</section>
+
+<section>
+  <h3><i class="fa-solid fa-calendar-day"></i> 5-Day Weather Forecast</h3>
+  <div id="forecastWidget" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;"></div>
 </section>
 
 <section>
@@ -373,17 +394,96 @@ async function submitForm(e){
   }
 }
 
-// Live time updater
+// Live time updater (UTC and Madeira)
+function pad(n){ return n<10 ? '0'+n : n; }
 function updateLiveTime() {
   const now = new Date();
-  const utc = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-  document.getElementById('liveTime').textContent = utc;
+  // UTC
+  const utcStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+  document.getElementById('liveTime').textContent = utcStr;
+  // Madeira time (Europe/Lisbon, UTC+1 in summer, UTC+0 in winter)
+  // Use Intl API, fallback to manual offset
+  let madeiraTime;
+  try {
+    madeiraTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
+  } catch(e) {
+    madeiraTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)); // fallback (may be wrong in DST)
+  }
+  const yyyy = madeiraTime.getFullYear();
+  const MM = pad(madeiraTime.getMonth()+1);
+  const dd = pad(madeiraTime.getDate());
+  const hh = pad(madeiraTime.getHours());
+  const min = pad(madeiraTime.getMinutes());
+  const ss = pad(madeiraTime.getSeconds());
+  document.getElementById('localTime').textContent = `${yyyy}-${MM}-${dd} ${hh}:${min}:${ss} Madeira local time`;
 }
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
 fetchData();
 setInterval(fetchData, 300000); // Refresh every 5 min
+
+// Madeira Airport coordinates
+const LPMA_LAT = 32.6979;
+const LPMA_LON = -16.7744;
+
+async function fetchForecast() {
+  // Open-Meteo API for next 5 days
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${LPMA_LAT}&longitude=${LPMA_LON}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const days = data.daily.time;
+    const maxTemps = data.daily.temperature_2m_max;
+    const minTemps = data.daily.temperature_2m_min;
+    const codes = data.daily.weathercode;
+
+    // Weather code to emoji/icon
+    const codeToIcon = c => {
+      if ([0].includes(c)) return "☀️";
+      if ([1,2,3].includes(c)) return "⛅";
+      if ([45,48].includes(c)) return "🌫️";
+      if ([51,53,55,56,57].includes(c)) return "🌦️";
+      if ([61,63,65,66,67,80,81,82].includes(c)) return "🌧️";
+      if ([71,73,75,77,85,86].includes(c)) return "❄️";
+      if ([95,96,99].includes(c)) return "⛈️";
+      return "❔";
+    };
+
+    // Weather code to description
+    const codeToDesc = c => {
+      if (c===0) return "Clear";
+      if ([1,2,3].includes(c)) return "Partly Cloudy";
+      if ([45,48].includes(c)) return "Fog";
+      if ([51,53,55,56,57].includes(c)) return "Drizzle";
+      if ([61,63,65,66,67,80,81,82].includes(c)) return "Rain";
+      if ([71,73,75,77,85,86].includes(c)) return "Snow";
+      if ([95,96,99].includes(c)) return "Thunderstorm";
+      return "Unknown";
+    };
+
+    let html = '';
+    for (let i = 0; i < days.length; i++) {
+      if (i > 4) break;
+      const day = new Date(days[i]);
+      const dateStr = day.toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' });
+      html += `
+        <div style="background:#f1f8e9;border-radius:12px;padding:14px 12px;min-width:105px;text-align:center;box-shadow:0 2px 12px #a8e0630f;">
+          <div style="font-size:2em;">${codeToIcon(codes[i])}</div>
+          <div style="font-weight:600;margin-bottom:4px;">${dateStr}</div>
+          <div style="font-size:1.1em;color:#388e3c;">${Math.round(maxTemps[i])}° / ${Math.round(minTemps[i])}°C</div>
+          <div style="margin-top:2px;font-size:0.98em;color:#795548;">${codeToDesc(codes[i])}</div>
+        </div>
+      `;
+    }
+    document.getElementById('forecastWidget').innerHTML = html;
+  } catch (err) {
+    document.getElementById('forecastWidget').textContent = "Error loading forecast.";
+  }
+}
+
+fetchForecast();
 </script>
 </body>
 </html>
