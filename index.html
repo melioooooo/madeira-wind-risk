@@ -1,315 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Madeira Airport Wind Risk (LPMA)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-<!-- Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<style>
-  body {
-    font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
-    background: radial-gradient(circle at 60% 10%, #b2ffea 0%, #a8e063 50%, #56ab2f 100%);
-    color: #222;
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-  }
-  header {
-    background: rgba(255,255,255,0.90);
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(56,171,47,0.13);
-    padding: 38px 28px 24px 28px;
-    margin-top: 48px;
-    margin-bottom: 24px;
-    width: 92vw;
-    max-width: 540px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  h1 {
-    font-size: 2.5em;
-    font-weight: 700;
-    color: #2e7d32;
-    margin: 0;
-    letter-spacing: 1.2px;
-  }
-  h2 {
-    font-size: 1.15em;
-    font-weight: 400;
-    color: #388e3c;
-    margin: 12px 0 0 0;
-  }
-  #liveTime, #localTime {
-    font-size: 1.06em;
-    font-weight: 500;
-    margin-top: 10px;
-    border-radius: 12px;
-    display: inline-block;
-    padding: 8px 18px;
-    box-shadow: 0 2px 6px #43e97b1a;
-    position: relative;
-    z-index: 2;
-    font-family: 'Roboto', Arial, sans-serif;
-  }
-  #liveTime { background:#e8f5e9; color:#43a047; }
-  #localTime { background:#e0f2f1; color:#00897b; }
-  .risk {
-    font-size: 2.9em;
-    font-weight: 700;
-    padding: 22px 0;
-    border-radius: 20px;
-    width: 340px;
-    margin: 34px auto 10px auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s, box-shadow 0.3s, color 0.3s;
-    box-shadow: 0 4px 18px rgba(56,171,47,0.14);
-    letter-spacing: 2px;
-    text-align: center;
-  }
-  .green {
-    background: linear-gradient(100deg, #43e97b 0%, #38f9d7 100%);
-    color: #fff;
-    border: 2px solid #a8e06380;
-  }
-  .orange {
-    background: linear-gradient(100deg, #ffb347 0%, #ffcc80 100%);
-    color: #fff;
-    border: 2px solid #ffb34780;
-  }
-  .red {
-    background: linear-gradient(100deg, #f85032 0%, #e73827 100%);
-    color: #fff;
-    border: 2px solid #e7382780;
-  }
-  #details {
-    margin-top: 12px;
-    font-size: 1.1em;
-    background: linear-gradient(90deg,#fffde7 70%, #fffde7cc 100%);
-    border-radius: 12px;
-    padding: 12px 0;
-    color: #795548;
-    font-weight: 500;
-    width: 92vw;
-    max-width: 390px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    box-shadow: 0 2px 10px #79554812;
-  }
-  /* Risk Legend */
-  #riskLegend {
-    background: rgba(255,255,255,0.93);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin: 20px auto 32px auto;
-    max-width: 540px;
-    width: 92vw;
-    box-shadow: 0 2px 12px rgba(56,171,47,0.08);
-    font-family: 'Roboto', Arial, sans-serif;
-    color: #333;
-  }
-  #riskLegend h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 1.12em;
-    color: #388e3c;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #riskLegend ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.96em;
-  }
-  #riskLegend li {
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px;
-    border-radius: 8px;
-    transition: box-shadow 0.3s;
-  }
-  .legend-box {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-  .legend-box.green { background: linear-gradient(100deg, #43e97b 0%, #38f9d7 100%); }
-  .legend-box.orange { background: linear-gradient(100deg, #ffb347 0%, #ffcc80 100%); }
-  .legend-box.red { background: linear-gradient(100deg, #f85032 0%, #e73827 100%); }
-  .active-legend {
-    box-shadow: 0 0 12px rgba(0,0,0,0.15);
-    font-weight: 600;
-  }
-  section {
-    background: rgba(255,255,255,0.93);
-    border-radius: 20px;
-    box-shadow: 0 2px 18px rgba(56,171,47,0.07);
-    width: 92vw;
-    max-width: 540px;
-    padding: 28px 18px;
-    margin-bottom: 32px;
-  }
-  h3 { font-size: 1.12em; color: #388e3c; font-weight: 600; }
-  pre {
-    background: #f1f8e9;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 1.1em;
-    color: #2e7d32;
-    border: 1px solid #c5e1a5;
-    font-family: monospace;
-  }
-  button {
-    padding: 12px 26px;
-    margin-top: 14px;
-    border-radius: 10px;
-    border: none;
-    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
-    color: #fff;
-    font-size: 1.18em;
-    font-weight: 600;
-    cursor: pointer;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Madeira Crosswind Risk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a2d9d5a64d.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to bottom right, #e8f5e9, #ffffff);
+      margin: 0;
+      padding: 0;
+      color: #333;
+      text-align: center;
+    }
+
+    header {
+      background: #388e3c;
+      color: white;
+      padding: 20px;
+      font-size: 1.6em;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #risk {
+      margin: 24px auto 12px;
+      padding: 18px 24px;
+      border-radius: 20px;
+      font-size: 1.6em;
+      font-weight: 600;
+      display: inline-block;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    #risk.green { background: linear-gradient(100deg,#43e97b,#38f9d7); color: white; }
+    #risk.orange { background: linear-gradient(100deg,#ffb347,#ffcc80); color: #333; }
+    #risk.red { background: linear-gradient(100deg,#f85032,#e73827); color: white; }
+
+    #details {
+      font-size: 1.1em;
+      margin: 10px auto 20px;
+    }
+
+    #riskLegend {
+      background: rgba(255,255,255,0.93);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin: 20px auto 32px auto;
+      max-width: 540px;
+      width: 92vw;
+      box-shadow: 0 2px 12px rgba(56,171,47,0.08);
+      font-family: 'Roboto', Arial, sans-serif;
+      color: #333;
+    }
+
+    #riskLegend h3 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 1.12em;
+      color: #388e3c;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #riskLegend ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.96em;
+    }
+
+    #riskLegend li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .legend-box {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .legend-box.green { background: linear-gradient(100deg,#43e97b,#38f9d7); }
+    .legend-box.orange { background: linear-gradient(100deg,#ffb347,#ffcc80); }
+    .legend-box.red { background: linear-gradient(100deg,#f85032,#e73827); }
+
+    .active-legend {
+      border: 2px solid #222;
+      background: rgba(200,200,200,0.15);
+    }
+
+    #forecastWidget {
+      margin: 32px auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      max-width: 720px;
+    }
+
+    footer {
+      font-size: 0.9em;
+      padding: 14px;
+      color: #666;
+      background: #f1f8e9;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Madeira Airport Wind Risk</h1>
-  <h2>LPMA – Runways 05 (049°) / 23 (229°)</h2>
-  <div id="liveTime">Loading UTC time...</div>
-  <div id="localTime">Loading Madeira local time...</div>
-  <p style="margin-top:18px;color:#555;font-size:1.08em;">
-    Typical August wind: <span style="background:#e0f7fa;border-radius:8px;padding:4px 12px;font-weight:500;">11–13 kt (17–23 km/h)</span>
-  </p>
-</header>
+  <header>
+    Madeira Crosswind Risk
+  </header>
 
-<div id="risk" class="risk">Loading...</div>
-<p id="details"></p>
+  <div id="risk" class="risk">Loading...</div>
+  <p id="details"></p>
 
-<!-- Risk Legend -->
-<div id="riskLegend">
-  <h3><i class="fa-solid fa-info-circle"></i> Risk Levels</h3>
-  <ul>
-    <li id="legend-green"><span class="legend-box green"></span> <b>GREEN</b> – Crosswind ≤15 kt (≤28 km/h) and Gust ≤25 kt (≤46 km/h)</li>
-    <li id="legend-orange"><span class="legend-box orange"></span> <b>ORANGE</b> – Crosswind 16–25 kt (30–46 km/h) or Gust 26–35 kt (48–65 km/h)</li>
-    <li id="legend-red"><span class="legend-box red"></span> <b>RED</b> – Crosswind >25 kt (>46 km/h) or Gust >35 kt (>65 km/h)</li>
-  </ul>
-</div>
+  <div id="riskLegend">
+    <h3><i class="fa-solid fa-info-circle"></i> Risk Levels</h3>
+    <ul>
+      <li id="legend-green"><span class="legend-box green"></span> <b>GREEN</b> – Crosswind ≤15 kt (≤28 km/h) and Gust ≤25 kt (≤46 km/h)</li>
+      <li id="legend-orange"><span class="legend-box orange"></span> <b>ORANGE</b> – Crosswind 16–25 kt (30–46 km/h) or Gust 26–35 kt (48–65 km/h)</li>
+      <li id="legend-red"><span class="legend-box red"></span> <b>RED</b> – Crosswind >25 kt (>46 km/h) or Gust >35 kt (>65 km/h)</li>
+    </ul>
+  </div>
 
-<section>
-  <h3><i class="fa-solid fa-wind"></i> Current METAR</h3>
-  <pre id="metar">Loading...</pre>
-  <h3><i class="fa-solid fa-cloud-sun"></i> Current TAF</h3>
-  <pre id="taf">Loading...</pre>
-</section>
+  <div id="forecastWidget"></div>
 
-<section>
-  <h3><i class="fa-solid fa-calendar-day"></i> 5-Day Weather Forecast</h3>
-  <div id="forecastWidget" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;"></div>
-</section>
+  <footer>
+    Data from CheckWX & Open-Meteo | Demo project
+  </footer>
 
-<section>
-  <form id="subscribeForm" onsubmit="submitForm(event)">
-    <label for="email"><i class="fa-solid fa-bell"></i> Get alerted when wind risk is <span style="color:#F44336;font-weight:700;">RED</span>:</label>
-    <input id="email" name="email" type="email" required placeholder="you@example.com" style="width:80%;padding:12px;margin-top:10px;border-radius:10px;border:1.5px solid #c5e1a5;"/>
-    <button type="submit"><i class="fa-solid fa-paper-plane"></i> Subscribe</button>
-    <div id="subMsg"></div>
-  </form>
-</section>
+  <script>
+    const API_KEY = "9a36222e800046f5bc2442dad1f47868"; // ⚠️ client-side exposed
 
-<script>
-const API_KEY = "9a36222e800046f5bc2442dad1f47868"; // your CheckWX API key
-const RUNWAYS = [49, 229];
+    async function fetchData() {
+      try {
+        const url = `https://api.checkwx.com/metar/LPMA/decoded`;
+        const res = await fetch(url, { headers: { "X-API-Key": API_KEY }});
+        const json = await res.json();
+        const metar = json.data[0];
 
-function deg2rad(deg){ return deg * Math.PI/180; }
-function calcCrosswind(windDir, windSpeed, rwyHeading){
-  let angle = Math.abs(windDir - rwyHeading);
-  if(angle>180) angle = 360 - angle;
-  return Math.abs(Math.round(windSpeed * Math.sin(deg2rad(angle))));
-}
-function ktToKmh(kt){ return Math.round(kt*1.852); }
-function getRisk(cross,gust){
-  if(cross>25 || gust>35) return "red";
-  if(cross>15 || gust>25) return "orange";
-  return "green";
-}
-function getRiskIcon(risk){
-  if(risk==="green") return '<i class="fa-solid fa-circle-check"></i>';
-  if(risk==="orange") return '<i class="fa-solid fa-triangle-exclamation"></i>';
-  if(risk==="red") return '<i class="fa-solid fa-ban"></i>';
-  return '<i class="fa-solid fa-circle-question"></i>';
-}
-function highlightLegend(risk){
-  ["green","orange","red"].forEach(r=>{
-    document.getElementById("legend-"+r).classList.remove("active-legend");
-  });
-  if(risk==="green") document.getElementById("legend-green").classList.add("active-legend");
-  if(risk==="orange") document.getElementById("legend-orange").classList.add("active-legend");
-  if(risk==="red") document.getElementById("legend-red").classList.add("active-legend");
-}
-async function fetchData(){
-  try{
-    let metarRes = await fetch(`https://api.checkwx.com/metar/LPMA?x-api-key=${API_KEY}`);
-    let tafRes = await fetch(`https://api.checkwx.com/taf/LPMA?x-api-key=${API_KEY}`);
-    let metarData = await metarRes.json();
-    let tafData = await tafRes.json();
-    let metar = metarData.data && metarData.data[0] ? metarData.data[0] : "No METAR data";
-    let taf = tafData.data && tafData.data[0] ? tafData.data[0] : "No TAF data";
-    document.getElementById("metar").textContent = metar;
-    document.getElementById("taf").textContent = taf;
-    let match = typeof metar==="string"? metar.match(/(\d{3})(\d{2})(G(\d{2}))?KT/):null;
-    if(match){
-      let dir = parseInt(match[1]), spd=parseInt(match[2]), gust=match[4]?parseInt(match[4]):spd;
-      let crosswinds = RUNWAYS.map(r=>calcCrosswind(dir,spd,r));
-      let maxCross = Math.max(...crosswinds);
-      let risk = getRisk(maxCross,gust);
-      let riskIcon = getRiskIcon(risk);
-      document.getElementById("risk").innerHTML = riskIcon+' <span style="margin-left:10px;">'+risk.toUpperCase()+'</span>';
-      document.getElementById("risk").className = `risk ${risk}`;
-      document.getElementById("details").textContent =
-        `Wind ${dir}° at ${spd} kt (${ktToKmh(spd)} km/h), gust ${gust} kt (${ktToKmh(gust)} km/h) | Max crosswind: ${maxCross} kt (${ktToKmh(maxCross)} km/h)`;
-      highlightLegend(risk);
-    } else {
-      document.getElementById("risk").innerHTML='<i class="fa-solid fa-circle-question"></i> No wind data';
-      document.getElementById("risk").className="risk";
-      document.getElementById("details").textContent="";
+        if (!metar) {
+          document.getElementById("risk").innerText = "No data";
+          return;
+        }
+
+        const wind = metar.wind;
+        const windDir = wind.degrees;
+        const windSpeedKt = wind.speed_kts;
+        const gustKt = wind.gust_kts || 0;
+
+        // Convert kt → km/h
+        const windSpeed = Math.round(windSpeedKt * 1.852);
+        const gust = Math.round(gustKt * 1.852);
+
+        // Runway 05/23 headings
+        const runways = [50, 230];
+
+        const crosswinds = runways.map(rwy => {
+          const angle = Math.abs(windDir - rwy);
+          const cross = Math.abs(windSpeed * Math.sin(angle * Math.PI/180));
+          return Math.round(cross);
+        });
+
+        const maxCross = Math.max(...crosswinds);
+
+        // Risk thresholds
+        let riskColor = "green";
+        if (maxCross > 46 || gust > 65) riskColor = "red";
+        else if (maxCross > 28 || gust > 46) riskColor = "orange";
+
+        const riskEl = document.getElementById("risk");
+        riskEl.className = riskColor;
+        riskEl.innerText = riskColor.toUpperCase() + " RISK";
+
+        document.getElementById("details").innerText =
+          `Wind: ${windSpeed} km/h (gust ${gust} km/h) | Max Crosswind: ${maxCross} km/h`;
+
+        // Update legend highlight
+        ["green","orange","red"].forEach(c => {
+          document.getElementById("legend-"+c).classList.remove("active-legend");
+        });
+        document.getElementById("legend-"+riskColor).classList.add("active-legend");
+
+      } catch (e) {
+        console.error(e);
+        document.getElementById("risk").innerText = "⚠️ Error fetching METAR";
+      }
     }
-  }catch(err){
-    console.error(err);
-    document.getElementById("risk").innerHTML='<i class="fa-solid fa-circle-xmark"></i> Error loading data';
-    document.getElementById("risk").className="risk";
-    document.getElementById("details").textContent="";
-  }
-}
-// time updater
-function pad(n){return n<10?'0'+n:n;}
-function updateLiveTime(){
-  const now=new Date();
-  document.getElementById("liveTime").textContent = now.toISOString().replace('T',' ').substring(0,19)+' UTC';
-  let madeira;
-  try{ madeira=new Date(now.toLocaleString('en-US',{timeZone:'Europe/Lisbon'})); }
-  catch(e){ madeira=new Date(now.getTime()-(now.getTimezoneOffset()*60000)); }
-  const str=`${madeira.getFullYear()}-${pad(madeira.getMonth()+1)}-${pad(madeira.getDate())} ${pad(madeira.getHours())}:${pad(madeira.getMinutes())}:${pad(madeira.getSeconds())} Madeira local time`;
-  document.getElementById("localTime").textContent=str;
-}
-setInterval(updateLiveTime,1000); updateLiveTime();
-fetchData(); setInterval(fetchData,300000);
-</script>
+
+    async function loadForecast() {
+      try {
+        const url = "https://api.open-meteo.com/v1/forecast?latitude=32.6979&longitude=-16.7745&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&timezone=Atlantic/Madeira";
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const days = data.daily.time;
+        const tMax = data.daily.temperature_2m_max;
+        const tMin = data.daily.temperature_2m_min;
+        const rain = data.daily.precipitation_sum;
+        const wind = data.daily.windspeed_10m_max;
+
+        const container = document.getElementById("forecastWidget");
+        container.innerHTML = "";
+
+        days.forEach((d, i) => {
+          const day = new Date(d);
+          const options = { weekday: "short", day: "numeric", month: "short" };
+          const label = day.toLocaleDateString("en-GB", options);
+
+          const card = document.createElement("div");
+          card.style.flex = "1 1 100px";
+          card.style.background = "#f1f8e9";
+          card.style.padding = "10px";
+          card.style.borderRadius = "12px";
+          card.style.textAlign = "center";
+          card.style.minWidth = "100px";
+          card.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+
+          card.innerHTML = `
+            <div style="font-weight:600;color:#388e3c">${label}</div>
+            <div>🌡️ ${tMin[i]}° / ${tMax[i]}°C</div>
+            <div>💧 ${rain[i]} mm</div>
+            <div>💨 ${wind[i]} km/h</div>
+          `;
+
+          container.appendChild(card);
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById("forecastWidget").innerHTML = "⚠️ Forecast not available";
+      }
+    }
+
+    fetchData();
+    loadForecast();
+    setInterval(fetchData, 300000); // refresh every 5 min
+  </script>
 </body>
 </html>
