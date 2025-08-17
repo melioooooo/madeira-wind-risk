@@ -19,7 +19,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    transition: background 0.5s;
   }
   header {
     background: rgba(255,255,255,0.90);
@@ -34,42 +33,23 @@
     position: relative;
     overflow: hidden;
   }
-  header::before {
-    content: "";
-    position: absolute;
-    top: -24px; left: -32px;
-    width: 120px; height: 120px;
-    background: radial-gradient(circle, #a8e06330 60%, transparent 100%);
-    z-index: 0;
-  }
   h1 {
     font-size: 2.5em;
     font-weight: 700;
     color: #2e7d32;
-    margin-bottom: 0px;
-    margin-top: 0px;
+    margin: 0;
     letter-spacing: 1.2px;
-    position: relative;
-    z-index: 2;
-    text-shadow: 0 2px 6px #a8e06319;
   }
   h2 {
     font-size: 1.15em;
     font-weight: 400;
     color: #388e3c;
-    margin-top: 12px;
-    margin-bottom: 0;
-    letter-spacing: 1px;
-    z-index: 2;
-    position: relative;
+    margin: 12px 0 0 0;
   }
-  #liveTime {
+  #liveTime, #localTime {
     font-size: 1.06em;
     font-weight: 500;
-    color: #43a047;
-    margin: 14px 0 0 0;
-    letter-spacing: 1px;
-    background: #e8f5e9;
+    margin-top: 10px;
     border-radius: 12px;
     display: inline-block;
     padding: 8px 18px;
@@ -78,21 +58,8 @@
     z-index: 2;
     font-family: 'Roboto', Arial, sans-serif;
   }
-  #localTime {
-    font-size: 1.06em;
-    font-weight: 500;
-    color: #00897b;
-    margin: 10px 0 0 0;
-    letter-spacing: 1px;
-    background: #e0f2f1;
-    border-radius: 12px;
-    display: inline-block;
-    padding: 8px 18px;
-    box-shadow: 0 2px 6px #43e97b1a;
-    position: relative;
-    z-index: 2;
-    font-family: 'Roboto', Arial, sans-serif;
-  }
+  #liveTime { background:#e8f5e9; color:#43a047; }
+  #localTime { background:#e0f2f1; color:#00897b; }
   .risk {
     font-size: 2.9em;
     font-weight: 700;
@@ -107,35 +74,25 @@
     box-shadow: 0 4px 18px rgba(56,171,47,0.14);
     letter-spacing: 2px;
     text-align: center;
-    position: relative;
-    z-index: 2;
-  }
-  .risk i {
-    font-size: 1.1em;
-    margin-right: 16px;
-    opacity: 0.8;
   }
   .green {
     background: linear-gradient(100deg, #43e97b 0%, #38f9d7 100%);
     color: #fff;
-    box-shadow: 0 8px 32px #43e97b2a;
     border: 2px solid #a8e06380;
   }
   .orange {
     background: linear-gradient(100deg, #ffb347 0%, #ffcc80 100%);
     color: #fff;
-    box-shadow: 0 8px 32px #ffb34725;
     border: 2px solid #ffb34780;
   }
   .red {
     background: linear-gradient(100deg, #f85032 0%, #e73827 100%);
     color: #fff;
-    box-shadow: 0 8px 32px #e7382730;
     border: 2px solid #e7382780;
   }
   #details {
     margin-top: 12px;
-    font-size: 1.15em;
+    font-size: 1.1em;
     background: linear-gradient(90deg,#fffde7 70%, #fffde7cc 100%);
     border-radius: 12px;
     padding: 12px 0;
@@ -145,9 +102,59 @@
     max-width: 390px;
     margin-left: auto;
     margin-right: auto;
-    letter-spacing: 1px;
     text-align: center;
     box-shadow: 0 2px 10px #79554812;
+  }
+  /* Risk Legend */
+  #riskLegend {
+    background: rgba(255,255,255,0.93);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin: 20px auto 32px auto;
+    max-width: 540px;
+    width: 92vw;
+    box-shadow: 0 2px 12px rgba(56,171,47,0.08);
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #333;
+  }
+  #riskLegend h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.12em;
+    color: #388e3c;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #riskLegend ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.96em;
+  }
+  #riskLegend li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s;
+  }
+  .legend-box {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .legend-box.green { background: linear-gradient(100deg, #43e97b 0%, #38f9d7 100%); }
+  .legend-box.orange { background: linear-gradient(100deg, #ffb347 0%, #ffcc80 100%); }
+  .legend-box.red { background: linear-gradient(100deg, #f85032 0%, #e73827 100%); }
+  .active-legend {
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+    font-weight: 600;
   }
   section {
     background: rgba(255,255,255,0.93);
@@ -157,62 +164,16 @@
     max-width: 540px;
     padding: 28px 18px;
     margin-bottom: 32px;
-    margin-top: 0;
-    text-align: left;
-    position: relative;
-    z-index: 1;
   }
-  h3 {
-    font-size: 1.12em;
-    margin-bottom: 10px;
-    color: #388e3c;
-    font-weight: 600;
-    letter-spacing: 1px;
-    font-family: 'Roboto', Arial, sans-serif;
-  }
+  h3 { font-size: 1.12em; color: #388e3c; font-weight: 600; }
   pre {
     background: #f1f8e9;
     padding: 16px;
-    overflow-x: auto;
     border-radius: 12px;
     font-size: 1.1em;
-    margin: 0 0 18px 0;
     color: #2e7d32;
     border: 1px solid #c5e1a5;
-    font-family: 'Roboto Mono', 'Roboto', monospace;
-    box-shadow: 0 1px 8px #a8e0631a;
-  }
-  form {
-    margin-top: 16px;
-    margin-bottom: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  label {
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #333;
-    font-size: 1.08em;
-    font-family: 'Montserrat', Arial, sans-serif;
-  }
-  input[type=email] {
-    width: 80%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    border: 1.5px solid #c5e1a5;
-    font-size: 1.08em;
-    outline: none;
-    transition: border-color 0.2s;
-    font-family: 'Roboto', Arial, sans-serif;
-    background: #f1f8e9;
-    box-shadow: 0 1px 6px #c5e1a51a;
-  }
-  input[type=email]:focus {
-    border-color: #388e3c;
-    background: #e8f5e9;
+    font-family: monospace;
   }
   button {
     padding: 12px 26px;
@@ -224,44 +185,6 @@
     font-size: 1.18em;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-    font-family: 'Montserrat', Arial, sans-serif;
-    box-shadow: 0 2px 10px #43e97b17;
-  }
-  button:hover {
-    background: linear-gradient(90deg, #38f9d7 0%, #43e97b 100%);
-    box-shadow: 0 4px 18px #43e97b22;
-  }
-  #subMsg {
-    margin-top:12px;
-    font-size: 1.05em;
-    color: #e65100;
-    font-weight: 500;
-    text-align: center;
-    min-height: 24px;
-  }
-  /* Decorative accent bar below header */
-  .accent-bar {
-    width: 240px;
-    height: 8px;
-    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 50%, #ffb347 100%);
-    border-radius: 8px;
-    margin: 18px auto 0 auto;
-    position: relative;
-    z-index: 2;
-    box-shadow: 0 2px 16px #43e97b1a;
-  }
-  /* Responsive styles */
-  @media (max-width: 700px) {
-    header, section { max-width: 99vw; padding: 14px; }
-    .risk, #details { width: 96vw; max-width: 99vw;}
-    .accent-bar { width: 60vw; min-width: 140px;}
-  }
-  @media (max-width: 420px) {
-    header, section { padding: 7px; }
-    .risk { font-size: 2em; width: 88vw; }
-    #details { font-size: 1em; }
-    .accent-bar { height: 7px; }
   }
 </style>
 </head>
@@ -271,17 +194,23 @@
   <h2>LPMA – Runways 05 (049°) / 23 (229°)</h2>
   <div id="liveTime">Loading UTC time...</div>
   <div id="localTime">Loading Madeira local time...</div>
-  <p style="margin-top:18px;margin-bottom:0;color:#555;font-size:1.08em;">
-    Typical August wind: 
-    <span style="background:#e0f7fa;border-radius:8px;padding:4px 12px;font-weight:500;">
-      11–13 kt (17–23 km/h)
-    </span>
+  <p style="margin-top:18px;color:#555;font-size:1.08em;">
+    Typical August wind: <span style="background:#e0f7fa;border-radius:8px;padding:4px 12px;font-weight:500;">11–13 kt (17–23 km/h)</span>
   </p>
-  <div class="accent-bar"></div>
 </header>
 
 <div id="risk" class="risk">Loading...</div>
 <p id="details"></p>
+
+<!-- Risk Legend -->
+<div id="riskLegend">
+  <h3><i class="fa-solid fa-info-circle"></i> Risk Levels</h3>
+  <ul>
+    <li id="legend-green"><span class="legend-box green"></span> <b>GREEN</b> – Crosswind ≤15 kt (≤28 km/h) and Gust ≤25 kt (≤46 km/h)</li>
+    <li id="legend-orange"><span class="legend-box orange"></span> <b>ORANGE</b> – Crosswind 16–25 kt (30–46 km/h) or Gust 26–35 kt (48–65 km/h)</li>
+    <li id="legend-red"><span class="legend-box red"></span> <b>RED</b> – Crosswind >25 kt (>46 km/h) or Gust >35 kt (>65 km/h)</li>
+  </ul>
+</div>
 
 <section>
   <h3><i class="fa-solid fa-wind"></i> Current METAR</h3>
@@ -297,193 +226,90 @@
 
 <section>
   <form id="subscribeForm" onsubmit="submitForm(event)">
-    <label for="email">
-      <i class="fa-solid fa-bell"></i>
-      Get alerted when wind risk is 
-      <span style="color:#F44336;font-weight:700;">RED</span>
-      (LPMA):
-    </label>
-    <input id="email" name="email" type="email" required placeholder="you@example.com" />
+    <label for="email"><i class="fa-solid fa-bell"></i> Get alerted when wind risk is <span style="color:#F44336;font-weight:700;">RED</span>:</label>
+    <input id="email" name="email" type="email" required placeholder="you@example.com" style="width:80%;padding:12px;margin-top:10px;border-radius:10px;border:1.5px solid #c5e1a5;"/>
     <button type="submit"><i class="fa-solid fa-paper-plane"></i> Subscribe</button>
     <div id="subMsg"></div>
   </form>
 </section>
 
 <script>
-const API_KEY = "9a36222e800046f5bc2442dad1f47868"; // Replace with your CheckWX API key
-const RUNWAYS = [49, 229]; // Runway headings
-const webAppUrl = "https://script.google.com/macros/s/AKfycbwrilEHTfBVNyGCbTCeoQGvuw8LP6e8KybS2r5uJZsuB6jYHdfFEfQY_DeAEibw72hI/exec"; // Replace with your Web App URL
+const API_KEY = "9a36222e800046f5bc2442dad1f47868"; // your CheckWX API key
+const RUNWAYS = [49, 229];
 
-function deg2rad(deg) { return deg * Math.PI / 180; }
-
-function calcCrosswind(windDir, windSpeed, rwyHeading) {
+function deg2rad(deg){ return deg * Math.PI/180; }
+function calcCrosswind(windDir, windSpeed, rwyHeading){
   let angle = Math.abs(windDir - rwyHeading);
-  if (angle > 180) angle = 360 - angle;
-  return Math.round(windSpeed * Math.sin(deg2rad(angle)));
+  if(angle>180) angle = 360 - angle;
+  return Math.abs(Math.round(windSpeed * Math.sin(deg2rad(angle))));
 }
-
-function getRisk(cross, gust) {
-  if (cross > 25 || gust > 35) return "red";
-  if (cross > 15 || gust > 25) return "orange";
+function ktToKmh(kt){ return Math.round(kt*1.852); }
+function getRisk(cross,gust){
+  if(cross>25 || gust>35) return "red";
+  if(cross>15 || gust>25) return "orange";
   return "green";
 }
-
-function getRiskIcon(risk) {
-  if (risk === "green") return '<i class="fa-solid fa-circle-check"></i>';
-  if (risk === "orange") return '<i class="fa-solid fa-triangle-exclamation"></i>';
-  if (risk === "red") return '<i class="fa-solid fa-ban"></i>';
+function getRiskIcon(risk){
+  if(risk==="green") return '<i class="fa-solid fa-circle-check"></i>';
+  if(risk==="orange") return '<i class="fa-solid fa-triangle-exclamation"></i>';
+  if(risk==="red") return '<i class="fa-solid fa-ban"></i>';
   return '<i class="fa-solid fa-circle-question"></i>';
 }
-
-async function fetchData() {
-  try {
+function highlightLegend(risk){
+  ["green","orange","red"].forEach(r=>{
+    document.getElementById("legend-"+r).classList.remove("active-legend");
+  });
+  if(risk==="green") document.getElementById("legend-green").classList.add("active-legend");
+  if(risk==="orange") document.getElementById("legend-orange").classList.add("active-legend");
+  if(risk==="red") document.getElementById("legend-red").classList.add("active-legend");
+}
+async function fetchData(){
+  try{
     let metarRes = await fetch(`https://api.checkwx.com/metar/LPMA?x-api-key=${API_KEY}`);
     let tafRes = await fetch(`https://api.checkwx.com/taf/LPMA?x-api-key=${API_KEY}`);
     let metarData = await metarRes.json();
     let tafData = await tafRes.json();
-
     let metar = metarData.data && metarData.data[0] ? metarData.data[0] : "No METAR data";
     let taf = tafData.data && tafData.data[0] ? tafData.data[0] : "No TAF data";
-
     document.getElementById("metar").textContent = metar;
     document.getElementById("taf").textContent = taf;
-
-    let match = typeof metar === "string" ? metar.match(/(\d{3})(\d{2})G?(\d{2})?KT/) : null;
-    if (match) {
-      let dir = parseInt(match[1]);
-      let spd = parseInt(match[2]);
-      let gust = match[3] ? parseInt(match[3]) : spd;
-
-      let crosswinds = RUNWAYS.map(r => calcCrosswind(dir, spd, r));
+    let match = typeof metar==="string"? metar.match(/(\d{3})(\d{2})(G(\d{2}))?KT/):null;
+    if(match){
+      let dir = parseInt(match[1]), spd=parseInt(match[2]), gust=match[4]?parseInt(match[4]):spd;
+      let crosswinds = RUNWAYS.map(r=>calcCrosswind(dir,spd,r));
       let maxCross = Math.max(...crosswinds);
-
-      let risk = getRisk(maxCross, gust);
+      let risk = getRisk(maxCross,gust);
       let riskIcon = getRiskIcon(risk);
-
-      document.getElementById("risk").innerHTML = riskIcon + '<span style="margin-left:10px;">' + risk.toUpperCase() + '</span>';
+      document.getElementById("risk").innerHTML = riskIcon+' <span style="margin-left:10px;">'+risk.toUpperCase()+'</span>';
       document.getElementById("risk").className = `risk ${risk}`;
       document.getElementById("details").textContent =
-        `Wind ${dir}° at ${spd} kt (gust ${gust} kt) | Max crosswind: ${maxCross} kt`;
+        `Wind ${dir}° at ${spd} kt (${ktToKmh(spd)} km/h), gust ${gust} kt (${ktToKmh(gust)} km/h) | Max crosswind: ${maxCross} kt (${ktToKmh(maxCross)} km/h)`;
+      highlightLegend(risk);
     } else {
-      document.getElementById("risk").innerHTML = '<i class="fa-solid fa-circle-question"></i> <span style="margin-left:10px;">No wind data</span>';
-      document.getElementById("risk").className = "risk";
-      document.getElementById("details").textContent = "";
+      document.getElementById("risk").innerHTML='<i class="fa-solid fa-circle-question"></i> No wind data';
+      document.getElementById("risk").className="risk";
+      document.getElementById("details").textContent="";
     }
-  } catch (err) {
-    document.getElementById("risk").innerHTML = '<i class="fa-solid fa-circle-xmark"></i> <span style="margin-left:10px;">Error loading data</span>';
-    document.getElementById("risk").className = "risk";
-    document.getElementById("details").textContent = "";
+  }catch(err){
     console.error(err);
+    document.getElementById("risk").innerHTML='<i class="fa-solid fa-circle-xmark"></i> Error loading data';
+    document.getElementById("risk").className="risk";
+    document.getElementById("details").textContent="";
   }
 }
-
-async function submitForm(e){
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const payload = { email: email };
-  try {
-    const resp = await fetch(webAppUrl, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const j = await resp.json();
-    document.getElementById('subMsg').textContent = j.message || (j.success ? "Subscribed" : "Error");
-  } catch(err) {
-    document.getElementById('subMsg').textContent = "Error sending request.";
-  }
+// time updater
+function pad(n){return n<10?'0'+n:n;}
+function updateLiveTime(){
+  const now=new Date();
+  document.getElementById("liveTime").textContent = now.toISOString().replace('T',' ').substring(0,19)+' UTC';
+  let madeira;
+  try{ madeira=new Date(now.toLocaleString('en-US',{timeZone:'Europe/Lisbon'})); }
+  catch(e){ madeira=new Date(now.getTime()-(now.getTimezoneOffset()*60000)); }
+  const str=`${madeira.getFullYear()}-${pad(madeira.getMonth()+1)}-${pad(madeira.getDate())} ${pad(madeira.getHours())}:${pad(madeira.getMinutes())}:${pad(madeira.getSeconds())} Madeira local time`;
+  document.getElementById("localTime").textContent=str;
 }
-
-// Live time updater (UTC and Madeira)
-function pad(n){ return n<10 ? '0'+n : n; }
-function updateLiveTime() {
-  const now = new Date();
-  // UTC
-  const utcStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-  document.getElementById('liveTime').textContent = utcStr;
-  // Madeira time (Europe/Lisbon, UTC+1 in summer, UTC+0 in winter)
-  // Use Intl API, fallback to manual offset
-  let madeiraTime;
-  try {
-    madeiraTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
-  } catch(e) {
-    madeiraTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)); // fallback (may be wrong in DST)
-  }
-  const yyyy = madeiraTime.getFullYear();
-  const MM = pad(madeiraTime.getMonth()+1);
-  const dd = pad(madeiraTime.getDate());
-  const hh = pad(madeiraTime.getHours());
-  const min = pad(madeiraTime.getMinutes());
-  const ss = pad(madeiraTime.getSeconds());
-  document.getElementById('localTime').textContent = `${yyyy}-${MM}-${dd} ${hh}:${min}:${ss} Madeira local time`;
-}
-setInterval(updateLiveTime, 1000);
-updateLiveTime();
-
-fetchData();
-setInterval(fetchData, 300000); // Refresh every 5 min
-
-// Madeira Airport coordinates
-const LPMA_LAT = 32.6979;
-const LPMA_LON = -16.7744;
-
-async function fetchForecast() {
-  // Open-Meteo API for next 5 days
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${LPMA_LAT}&longitude=${LPMA_LON}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`;
-
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    const days = data.daily.time;
-    const maxTemps = data.daily.temperature_2m_max;
-    const minTemps = data.daily.temperature_2m_min;
-    const codes = data.daily.weathercode;
-
-    // Weather code to emoji/icon
-    const codeToIcon = c => {
-      if ([0].includes(c)) return "☀️";
-      if ([1,2,3].includes(c)) return "⛅";
-      if ([45,48].includes(c)) return "🌫️";
-      if ([51,53,55,56,57].includes(c)) return "🌦️";
-      if ([61,63,65,66,67,80,81,82].includes(c)) return "🌧️";
-      if ([71,73,75,77,85,86].includes(c)) return "❄️";
-      if ([95,96,99].includes(c)) return "⛈️";
-      return "❔";
-    };
-
-    // Weather code to description
-    const codeToDesc = c => {
-      if (c===0) return "Clear";
-      if ([1,2,3].includes(c)) return "Partly Cloudy";
-      if ([45,48].includes(c)) return "Fog";
-      if ([51,53,55,56,57].includes(c)) return "Drizzle";
-      if ([61,63,65,66,67,80,81,82].includes(c)) return "Rain";
-      if ([71,73,75,77,85,86].includes(c)) return "Snow";
-      if ([95,96,99].includes(c)) return "Thunderstorm";
-      return "Unknown";
-    };
-
-    let html = '';
-    for (let i = 0; i < days.length; i++) {
-      if (i > 4) break;
-      const day = new Date(days[i]);
-      const dateStr = day.toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' });
-      html += `
-        <div style="background:#f1f8e9;border-radius:12px;padding:14px 12px;min-width:105px;text-align:center;box-shadow:0 2px 12px #a8e0630f;">
-          <div style="font-size:2em;">${codeToIcon(codes[i])}</div>
-          <div style="font-weight:600;margin-bottom:4px;">${dateStr}</div>
-          <div style="font-size:1.1em;color:#388e3c;">${Math.round(maxTemps[i])}° / ${Math.round(minTemps[i])}°C</div>
-          <div style="margin-top:2px;font-size:0.98em;color:#795548;">${codeToDesc(codes[i])}</div>
-        </div>
-      `;
-    }
-    document.getElementById('forecastWidget').innerHTML = html;
-  } catch (err) {
-    document.getElementById('forecastWidget').textContent = "Error loading forecast.";
-  }
-}
-
-fetchForecast();
+setInterval(updateLiveTime,1000); updateLiveTime();
+fetchData(); setInterval(fetchData,300000);
 </script>
 </body>
 </html>
